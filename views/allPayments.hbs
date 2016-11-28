@@ -1,0 +1,224 @@
+<div class="col-md-12">
+
+    {{#if PaymentDeleted}}
+        <div class="alert alert-success">
+            {{PaymentDeleted}}
+        </div>
+    {{/if}}
+
+    {{#if PaymentNotDeleted}}
+        <div class="alert alert-danger">
+            {{PaymentNotDeleted}}
+        </div>
+    {{/if}}
+
+    {{#if PaymentUpdated}}
+        <div class="alert alert-success">
+            {{PaymentUpdated}}
+        </div>
+    {{/if}}
+
+
+
+
+
+
+    {{reverseHB payments}}
+
+    <h3>Sort By </h3>
+
+
+
+
+    <form action="/allPayments" method="post" class="form-inline">
+
+
+        <select class="selectpicker" name="selsort1" id="selsort1">
+            <option value="" disabled selected>Category Name</option>
+            {{#each categories}}
+                <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+            {{/each}}
+        </select>
+
+
+        <select class="selectpicker" name="selsort2" id="selsort2">
+            <option value="" disabled selected>Item Name</option>
+        </select>
+
+
+        <label>Buyer's Name</label>
+        <select class="selectpicker" name="selchoosebuy" id="selchoosebuy">
+            <option value="" disabled selected>Buyer's Name</option>
+            {{#each buyers}}
+                <option value="{{this.buyerName}}">{{this.buyerName}}</option>
+            {{/each}}
+        </select>
+
+
+        <br><br>
+        <label>Payment Date</label>
+        <div class="form-group">
+            <div class='input-group date' id='date1'>
+                <input type='text' id="date2" name="date2" class="form-control" />
+                <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+            </div>
+        </div>
+
+        <input type="hidden" name="hiddenDate" id="hiddenDate" value="">
+
+
+
+
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+
+
+
+
+    <script>
+
+        //date picker
+        $(function () {
+            $('#date1').datetimepicker({
+                //maskInput:true,
+                format: 'MM/YYYY'
+            });
+        });
+
+        $("form").submit(function(){
+            var oldDate = $('#date2').val();
+            document.getElementById("hiddenDate").value = oldDate;
+        });
+
+
+
+        $(document).ready(function(){
+
+
+
+
+            //dropdown list from list
+            $('#selsort1').change(function(){
+                populate0();
+            });
+        });
+
+        function populate0() {
+
+            var select1 = $("#selsort1");
+            var select2 = $("#selsort2");
+
+
+            var selection1 = select1.val();
+
+            var values =[];
+            var titles =[];
+
+            var allitems = JSON.parse('{{{fromJSON items}}}');
+
+            select2.html('');
+
+            for (var key in allitems) {
+
+                if (allitems[key].categoryName === selection1) {
+                    values[key] = allitems[key].itemName;
+                    titles[key] = allitems[key].itemName;
+                }
+            }
+
+
+            //<option value="" disabled selected>Category Name</option>
+
+            select2.append($('<option value="" disabled selected>Select an item</option>'));
+
+            for (var i in values){
+                select2.append($('<option>'+titles[i]+'</option>').attr("value", values[i]));
+            }
+
+            select2.selectpicker('refresh');
+            select2.selectpicker('render');
+
+        }
+    </script>
+
+
+
+
+
+
+
+
+    <br>
+
+
+
+
+
+        <!-- GET TOTAL SPENT BY all in all times -->
+
+
+    <h3>Total Amount spent : {{totalAmount}} LE </h3>
+
+
+
+
+    <br>
+    <br>
+
+    <table class="table table-bordered table-hover">
+        <thead class="">
+            <tr>
+                <th>#</th>
+                <th>Item Name</th>
+                <th>Category Name</th>
+                <th>Item's price</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Buyer</th>
+                <th>Date</th>
+                <th colspan="3">Time</th>
+
+            </tr>
+        </thead>
+        <tbody >
+    {{#each payments}}
+
+    {{#if (less50HB @index)}}
+        <tr>
+            <th scope="row">{{reverseCounterHB ../payments.length @index}}</th>
+            <td>{{this.itemName}}</td>
+            <td>{{this.categoryName}}</td>
+            <td>{{this.priceEach}} LE</td>
+            <td>{{this.quantity}}</td>
+            <td>{{this.priceWhole}} LE</td>
+            <td>{{this.buyerName}}</td>
+            <td>{{dayHB this.date}} / {{monthHB this.date}} / {{yearHB this.date}}</td>
+            <td>{{hourHB this.date}} : {{minutesHB this.date}}</td>
+            <td>
+                <form action="/updatePayment/{{this._id}}" method="get">
+                    <button class="myhref" type="submit">Update</button>
+                </form>
+            </td>
+            <td>
+                <form action="/deletePayment/{{this._id}}" method="post">
+                    <button class="myhref" type="submit">Delete</button>
+                </form>
+            </td>
+
+        </tr>
+
+    {{/if}}
+
+    {{/each}}
+        </tbody>
+    </table>
+
+
+
+</div>
+

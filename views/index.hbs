@@ -1,0 +1,444 @@
+<div class="col-md-8">
+
+    <!-- Flashing -->
+
+    {{#if newPaymentInserted}}
+        <div class="alert alert-success">
+            {{newPaymentInserted}}
+        </div>
+    {{/if}}
+
+    {{#if newPaymentNotInserted}}
+        <div class="alert alert-danger">
+            {{newPaymentNotInserted}}
+        </div>
+    {{/if}}
+
+    {{#if newCategoryInserted}}
+        <div class="alert alert-success">
+            {{newCategoryInserted}}
+        </div>
+    {{/if}}
+
+    {{#if newCategoryNotInserted}}
+        <div class="alert alert-danger">
+            {{newCategoryNotInserted}}
+        </div>
+    {{/if}}
+
+    {{#if newItemInserted}}
+        <div class="alert alert-success">
+            {{newItemInserted}}
+        </div>
+    {{/if}}
+
+    {{#if newItemNotInserted}}
+        <div class="alert alert-danger">
+            {{newItemNotInserted}}
+        </div>
+    {{/if}}
+
+    {{#if CategoryDeleted}}
+        <div class="alert alert-success">
+            {{CategoryDeleted}}
+        </div>
+    {{/if}}
+
+    {{#if CategoryNotDeleted}}
+        <div class="alert alert-danger">
+            {{CategoryNotDeleted}}
+        </div>
+    {{/if}}
+
+    {{#if newBuyerInserted}}
+        <div class="alert alert-success">
+            {{newBuyerInserted}}
+        </div>
+    {{/if}}
+
+    {{#if newBuyerNotInserted}}
+        <div class="alert alert-danger">
+            {{newBuyerNotInserted}}
+        </div>
+    {{/if}}
+
+    {{#if ItemDeleted}}
+        <div class="alert alert-success">
+            {{ItemDeleted}}
+        </div>
+    {{/if}}
+
+    {{#if ItemNotDeleted}}
+        <div class="alert alert-danger">
+            {{ItemNotDeleted}}
+        </div>
+    {{/if}}
+
+    {{#if BuyerRemoved}}
+        <div class="alert alert-success">
+            {{BuyerRemoved}}
+        </div>
+    {{/if}}
+
+    {{#if BuyerNotRemoved}}
+        <div class="alert alert-danger">
+            {{BuyerNotRemoved}}
+        </div>
+    {{/if}}
+
+
+
+
+
+    <div class="row-md-8 form-group well">
+        <h3 >New Payment</h3>
+        <br>
+
+        <form action="/newPayment" method="post" class="form-inline">
+
+
+            <select class="selectpicker" name="selnewpayment1" id="selnewpayment1">
+                <option value="" disabled selected>Category Name</option>
+                {{#each categories}}
+                    <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+                {{/each}}
+            </select>
+
+            <select class="selectpicker" name="selnewpayment2" id="selnewpayment2">
+                <option value="" disabled selected>Item Name</option>
+            </select>
+
+            <br><br>
+            <label>Payment Date</label>
+            <div class="form-group">
+                <div class='input-group date' id='date1'>
+                    <input type='text' id="date2" name="date2" class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+
+            <input type="hidden" name="hiddenDate" id="hiddenDate" value="">
+
+            <br><br>
+            <label>Quantity</label>
+            <input type="text" class="form-control" name="quantity1" id="quantity1" placeholder="Quantity">
+            <br><br>
+            <label>Price for each</label>
+            <input type="text" class="form-control" name="price1" id="price1" placeholder="Price">
+            <br><br>
+            <label>Amount</label>
+            <input type="text" class="form-control" name="price2" id="price2" placeholder="Price">
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+    <script>
+
+        //date picker
+        $(function () {
+            $('#date1').datetimepicker({
+                //maskInput:true,
+                format: 'DD-MM-YYYY HH:mm'
+            });
+        });
+
+        $("form").submit(function(){
+            var oldDate = $('#date2').val();
+            document.getElementById("hiddenDate").value = oldDate;
+        });
+
+
+
+
+
+        //addition
+        $(document).ready(function(){
+
+            $('#price1').on("change, keyup", function() {
+                var q = parseFloat($("#quantity1").val());
+                var p = parseFloat($("#price1").val());
+                var tp = q * p;
+                $("#price2").val(tp);
+
+                if($("#price2").val()=="NaN"){
+                    $("#price2").val(0);
+                }
+            });
+
+            $('#quantity1').on("change, keyup", function() {
+                $("#price2").val("");
+                var q = parseFloat($("#quantity1").val());
+                var p = parseFloat($("#price1").val());
+                var tp = q * p;
+                $("#price2").val(tp);
+
+                if($("#price2").val()=="NaN"){
+                    $("#price2").val(0);
+                }
+            });
+
+
+
+
+            //dropdown list from list
+            $('#selnewpayment1').change(function(){
+                populate0();
+            });
+        });
+
+        function populate0() {
+
+            var select1 = $("#selnewpayment1");
+            var select2 = $("#selnewpayment2");
+
+
+            var selection1 = select1.val();
+
+            var values =[];
+            var titles =[];
+
+            var allitems = JSON.parse('{{{fromJSON items}}}');
+
+            select2.html('');
+
+            for (var key in allitems) {
+
+                if (allitems[key].categoryName === selection1) {
+                    values[key] = allitems[key].itemName;
+                    titles[key] = allitems[key].itemName;
+                }
+            }
+
+            for (var i in values){
+                select2.append($('<option>'+titles[i]+'</option>').attr("value", values[i]));
+            }
+
+            select2.selectpicker('refresh');
+            select2.selectpicker('render');
+
+        }
+    </script>
+
+
+
+
+    <div class="row-md-8 form-group well">
+
+        <form action="/allPayments" class="form-inline">
+            <button type="submit" class="btn btn-success">Check Latest Payments</button>
+        </form>
+
+    </div>
+
+
+
+
+    <div class="row-md-8 form-group well">
+        <label>New Category</label>
+
+        <form action="/newCategory" method="post" class="form-inline">
+            <input type="text" class="form-control" name="newcat" id="newcat" placeholder="New Category Name">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+
+    <div class="row-md-8 form-group well">
+        <label>New Item</label>
+
+        <form action="/newItem" method="post" class="form-inline">
+
+
+            <select class="selectpicker" name="selnewitem" id="selnewitem">
+                <option value="" disabled selected>Category Name</option>
+                {{#each categories}}
+                    <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+                {{/each}}
+            </select>
+
+            <input type="text" class="form-control" name="newitem" id="newitem" placeholder="New Item Name">
+            <button type="submit" class="btn btn-primary">Submit</button>
+
+
+        </form>
+
+    </div>
+
+
+    <div class="row-md-8 form-group well">
+        <label>Delete Existing Category</label>
+
+        <form action="/deleteCategory" method="post" class="form-inline">
+
+            <select class="selectpicker" name="seldeletecat" id="seldeletecat">
+                <option value="" disabled selected>Category Name</option>
+                {{#each categories}}
+                <option value="{{this._id}}">{{this.categoryName}}</option>
+                {{/each}}
+            </select>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+
+
+
+
+   <!-- <script type="text/javascript">
+        var its = {
+            it1:{name: "item1"},
+            it2:{name: "item2"}
+        };
+
+        var n1 = its[Object.keys(its)[1]].name;
+        console.log(n1);
+    </script> -->
+
+
+
+    <div class="row-md-8 form-group well">
+        <label>Delete Existing Item</label>
+
+        <form action="/deleteItem" method="post" class="form-inline">
+
+            <select class="selectpicker" name="seldeleteitem1" id="seldeleteitem1">
+                <option value="" disabled selected>Category Name</option>
+                {{#each categories}}
+                    <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+                {{/each}}
+            </select>
+
+            <select class="selectpicker" name="seldeleteitem2" id="seldeleteitem2">
+                <option value="" disabled selected>Item Name</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+
+    <script>
+        $(document).ready(function(){
+            $('#seldeleteitem1').change(function(){
+                populate1();
+            });
+        });
+
+        function populate1() {
+
+            var select1 = $("#seldeleteitem1");
+            var select2 = $("#seldeleteitem2");
+
+
+            var selection1 = select1.val();
+            var values =[];
+            var titles =[];
+
+            var allitems = JSON.parse('{{{fromJSON items}}}');
+
+            select2.html('');
+
+            for (var key in allitems) {
+
+                if (allitems[key].categoryName === selection1) {
+                    values[key] = allitems[key]._id;
+                    titles[key] = allitems[key].itemName;
+                }
+            }
+
+
+            for (var i in values){
+                select2.append($('<option>'+titles[i]+'</option>').attr("value", values[i]));
+            }
+
+            select2.selectpicker('refresh');
+            select2.selectpicker('render');
+
+        }
+    </script>
+
+
+
+
+
+
+    <div class="row-md-8 form-group well">
+        <label>New Buyer</label>
+
+        <form action="/newBuyer" method="post" class="form-inline">
+            <input type="text" class="form-control" name="newbuyer" id="newbuyer" placeholder="New Buyer's Name">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+
+
+    <div class="row-md-8 form-group well">
+        <label>Remove Existing Buyer</label>
+
+        <form action="/removeBuyer" method="post" class="form-inline">
+
+            <select class="selectpicker" name="seldeletebuy" id="seldeletebuy">
+                <option value="" disabled selected>Buyer's Name</option>
+                {{#each buyers}}
+                    <option value="{{this._id}}">{{this.buyerName}}</option>
+                {{/each}}
+            </select>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+
+
+    <br>
+    <br>
+    <br>
+
+
+
+</div>
+
+<div class="col-md-4">
+    <br>
+    <h4>Current Buyer</h4>
+
+    <form action="/chooseBuyer" method="post" class="form-inline">
+
+
+
+        {{#if buyerSession}}
+
+            <p>Current Buyer is {{buyerSession}}</p>
+
+            <a href="/destroyBuyer">Change Buyer</a>
+        {{else}}
+
+        <select class="selectpicker" name="selchoosebuy" id="selchoosebuy">
+            <option value="" disabled selected>Buyer's Name</option>
+            {{#each buyers}}
+                <option value="{{this.buyerName}}">{{this.buyerName}}</option>
+            {{/each}}
+        </select>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+        {{/if}}
+    </form>
+
+    <br>
+    <br>
+    <br>
+</div>
+
+
+

@@ -1,0 +1,192 @@
+<div class="col-md-12">
+
+    {{#if PaymentNotUpdated}}
+        <div class="alert alert-danger">
+            {{PaymentNotUpdated}}
+        </div>
+    {{/if}}
+
+    <table class="table table-bordered">
+        <thread>
+            <tr>
+                <th>Item Name</th>
+                <th>Category Name</th>
+                <th>Item's price</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Buyer</th>
+                <th>Date</th>
+                <th colspan="3">Time</th>
+
+            </tr>
+        </thread>
+        <tbody>
+            <tr>
+                <td>{{payment.itemName}}</td>
+                <td>{{payment.categoryName}}</td>
+                <td>{{payment.priceEach}} LE </td>
+                <td>{{payment.quantity}}</td>
+                <td>{{payment.priceWhole}} LE</td>
+                <td>{{payment.buyerName}}</td>
+                <td>{{dayHB payment.date}} / {{monthHB payment.date}} / {{yearHB payment.date}}</td>
+                <td>{{hourHB payment.date}} : {{minutesHB payment.date}}</td>
+
+            </tr>
+        </tbody>
+    </table>
+
+<br>
+
+    <h3 >Update this transaction</h3>
+    <br>
+
+    <form action="/updatePayment" method="post" class="form-inline">
+
+
+        <!--hidden field to pass the transaction id to the route-->
+        <input type="hidden" name="updateid" id="updateid" value="{{payment._id}}">
+
+
+
+        <select class="selectpicker" name="selnewpayment1" id="selnewpayment1">
+            <option value="" disabled selected>Category Name</option>
+            {{#each categories}}
+                <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+            {{/each}}
+        </select>
+
+        <select class="selectpicker" name="selnewpayment2" id="selnewpayment2">
+            <option value="" disabled selected>Item Name</option>
+        </select>
+
+        <br>
+        <br>
+
+        <label>Buyer's Name</label>
+        <select class="selectpicker" name="selchoosebuy" id="selchoosebuy">
+            <option value="" disabled selected>Buyer's Name</option>
+            {{#each buyers}}
+                <option value="{{this.buyerName}}">{{this.buyerName}}</option>
+            {{/each}}
+        </select>
+
+        <br><br>
+        <label>Payment Date</label>
+        <div class="form-group">
+            <div class='input-group date' id='date1'>
+                <input type='text' id="date2" name="date2" class="form-control" />
+                <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+            </div>
+        </div>
+
+        <input type="hidden" name="hiddenDate" id="hiddenDate" value="">
+
+
+        <br><br>
+        <label>Quantity</label>
+        <input type="text" class="form-control" name="quantity1" id="quantity1" placeholder="Quantity">
+        <br><br>
+        <label>Price for each</label>
+        <input type="text" class="form-control" name="price1" id="price1" placeholder="Price">
+        <br><br>
+        <label>Amount</label>
+        <input type="text" class="form-control" name="price2" id="price2" placeholder="Price">
+
+
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+
+    <script>
+
+
+        //date picker
+        $(function () {
+            $('#date1').datetimepicker({
+                //maskInput:true,
+                format: 'DD-MM-YYYY HH:mm'
+            });
+        });
+
+        $("form").submit(function(){
+            var oldDate = $('#date2').val();
+            document.getElementById("hiddenDate").value = oldDate;
+        });
+
+
+
+        //addition
+        $(document).ready(function(){
+
+            $('#price1').on("change, keyup", function() {
+
+                var q = parseFloat($("#quantity1").val());
+                var p = parseFloat($("#price1").val());
+                var tp = q * p;
+                $("#price2").val(tp);
+
+                if($("#price2").val()=="NaN"){
+                    $("#price2").val(0);
+                }
+            });
+
+            $('#quantity1').on("change, keyup", function() {
+                $("#price2").val("");
+                var q = parseFloat($("#quantity1").val());
+                var p = parseFloat($("#price1").val());
+                var tp = q * p;
+                $("#price2").val(tp);
+
+                if($("#price2").val()=="NaN"){
+                    $("#price2").val(0);
+                }
+            });
+
+
+
+
+            //dropdown list from list
+
+            $('#selnewpayment1').change(function(){
+                populate0();
+            });
+        });
+
+        function populate0() {
+
+            var select1 = $("#selnewpayment1");
+            var select2 = $("#selnewpayment2");
+
+
+            var selection1 = select1.val();
+
+            var values =[];
+            var titles =[];
+
+            var allitems = JSON.parse('{{{fromJSON items}}}');
+
+            select2.html('');
+
+            for (var key in allitems) {
+
+                if (allitems[key].categoryName === selection1) {
+                    values[key] = allitems[key].itemName;
+                    titles[key] = allitems[key].itemName;
+                }
+            }
+
+            for (var i in values){
+                select2.append($('<option>'+titles[i]+'</option>').attr("value", values[i]));
+            }
+
+            select2.selectpicker('refresh');
+            select2.selectpicker('render');
+
+        }
+    </script>
+
+<br><br>
+</div>
