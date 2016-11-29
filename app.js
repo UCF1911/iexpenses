@@ -16,7 +16,7 @@ var routes = require('./routes/index');
 var app = express();
 
 //mongoose.connect('localhost:27017/iexpense');
-mongoose.connect('ucf:ucf@ds111748.mlab.com:11748/iexpense');
+mongoose.connect('mongodb://ucf:ucf@ds111748.mlab.com:11748/iexpense');
 
 // view engine setup
 app.engine('.hbs', expressHbs({
